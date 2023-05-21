@@ -1,0 +1,28 @@
+services:
+  db:
+    image: postgres:14-alpine3.18
+    container_name: postgres-14
+    env_file: .env
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+      TZ: "Asia/Tokyo"
+    ports:
+      - 5432:5432
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - type: bind
+        source: ./sql
+        target: /home/sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres}"]
+      interval: 5s
+      retries: 3
+    networks:
+      - postgres-dev
+volumes:
+  postgres-data:
+
+networks:
+  postgres-dev:
+    external: true
